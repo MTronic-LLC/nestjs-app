@@ -1,17 +1,21 @@
 import {AirbnbStaySearchDto} from "../dto/actor/airbnb-stay-search.dto";
 import { HttpException, Injectable } from "@nestjs/common";
 import { LocationsByRegion, LocationDetailsDtos } from "@mtronic-llc/fahs-common-test";
+import { AvailablePlaceService } from "src/database/stay-search-places/available-place.service";
 @Injectable()
 export class AirbnbStaySearchMapper {
-    mapAirbnbStaySearchDtoToPlaceOfInterestAvailabilityDto(
-        airbnbStaySearchDtos: AirbnbStaySearchDto[]): LocationsByRegion[] {
+    constructor (private readonly availablePlaceService: AvailablePlaceService) {}
+
+    public mapAirbnbStaySearchDtoToPlaceOfInterestAvailabilityDto(
+        airbnbStaySearchDtos: AirbnbStaySearchDto[], checkin: string, checkout: string): LocationsByRegion[] {
         let staysSearchAvailibilityByCityDtos: LocationsByRegion[] = [];
         try {
             airbnbStaySearchDtos.map(airbnbStaySearchDto => {
                 const city = airbnbStaySearchDto.city;
-                const staySearchAvailibilityByCityDtos: LocationsByRegion = {
-                    city, 
-                    places: airbnbStaySearchDto.data.data.presentation.explore.sections.sectionIndependentData.staysSearch.searchResults.map(
+                const placesDataParsed = [];
+
+                airbnbStaySearchDto.data.map(place => {
+                    place.data.presentation.staysSearch.results.searchResults.map(
                         searchResult => {
                             if (!searchResult.listing || !searchResult.listing.id || !searchResult.listing.city || !searchResult.listing.name) {
                                 throw new HttpException('Error al mapear los resultados de la busqueda', 500);
@@ -24,17 +28,38 @@ export class AirbnbStaySearchMapper {
                                 pricePerNight = undefined;
                             }
 
+                            const picturesUrl = [];
+
+                            searchResult.listing.contextualPictures.map(pictureData => {
+                                if (pictureData.picture) {
+                                    picturesUrl.push(pictureData.picture);
+                                }
+                            });
+
                             const parsedPlaceOfInterestAvailabilityDtos = new LocationDetailsDtos(
                                 searchResult.listing.id,
                                 pricePerNight,
                                 totalPrice,
                                 city,
                                 searchResult.listing.city,
-                                searchResult.listing.name
+                                searchResult.listing.name,
+                                searchResult.listing.roomTypeCategory,
+                                {latitude: searchResult.listing.coordinate.latitude, longitude: searchResult.listing.coordinate.longitude},
+                                searchResult.listing.avgRatingLocalized,
+                                picturesUrl,
+                                {checkin, checkout}
                             );
-                            return parsedPlaceOfInterestAvailabilityDtos
-                        }
-                    )
+                            //this.availablePlaceService.createPlace(parsedPlaceOfInterestAvailabilityDtos);
+                            placesDataParsed.push(parsedPlaceOfInterestAvailabilityDtos);
+                            //return parsedPlaceOfInterestAvailabilityDtos
+                        });
+                        return placesDataParsed;
+                    }
+                )
+                console.log('Count of places obtained: ' + placesDataParsed.length);
+                const staySearchAvailibilityByCityDtos: LocationsByRegion = {
+                    city, 
+                    places: placesDataParsed
                 }
                 staysSearchAvailibilityByCityDtos.push(staySearchAvailibilityByCityDtos);
             });

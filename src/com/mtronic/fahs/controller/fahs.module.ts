@@ -6,9 +6,10 @@ import { ActorService } from "../service/actor.service";
 import { CodaService } from "../../../../coda/coda.service";
 import {AirbnbCalendarMapper} from "../mapper/airbnb-calendar.mapper";
 import {AirbnbStaySearchMapper} from "../mapper/airbnb-stay-search.mapper";
+import { AvailablePlaceModule } from "src/database/stay-search-places/available-place.module";
 
 @Module({
-    imports: [CodaModule, ActorModule],
+    imports: [CodaModule, ActorModule, AvailablePlaceModule],
     controllers: [FahsController],
     providers: [CodaService, ActorService, AirbnbCalendarMapper, AirbnbStaySearchMapper]
 })

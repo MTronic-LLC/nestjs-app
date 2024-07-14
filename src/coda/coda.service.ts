@@ -2,6 +2,7 @@ import axios from 'axios';
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { viewsId } from '../utils/constants';
+import { LocationsByRegion } from '@mtronic-llc/fahs-common-test';
 import * as filters from './coda.filters.json';
 
 @Injectable()
@@ -99,6 +100,7 @@ export class CodaService {
                 placesId = response.data.items
                     .map((item: any) => {
                         let currentPlaceId = item.values['c-OCMBG1whUA'];
+                        console.log(item.values['c-eoVyQYeGTB']);
                         if (!currentPlaceId.includes('datosDePrueba') && currentPlaceId !== '') {
                             return currentPlaceId;
                         }
@@ -124,5 +126,50 @@ export class CodaService {
         } else {
             throw new HttpException('Página no encontrada', 404);
         }
+    }
+
+    public async filterExistingPlacesSavedInCoda(placesData: LocationsByRegion[]): Promise<LocationsByRegion[]> {
+        const codaDocID = this.configService.get<string>('CODA_DOC_ID');
+        const codaApiKey = this.configService.get<string>('CODA_API_KEY');
+        const headers: Record<string, string> = {
+            Authorization: `Bearer ${codaApiKey}`,
+        };
+        const filteredPlacesData: LocationsByRegion[] = [];
+
+        try {
+            const response = await axios.get(
+                `https://coda.io/apis/v1/docs/${codaDocID}/tables/grid-54ktLB_93G/rows`,
+                {
+                    headers,
+                },
+            );
+            placesData.forEach((region: LocationsByRegion) => {
+                let filteredPlacesForRegion = [];
+                region.places.forEach((place) => {
+                    //item.values['c-OCMBG1whUA'] es el id del lugar de coda
+                    const placeExists = response.data.items.some(
+                        (item: any) => item.values['c-OCMBG1whUA'] === place.airbnb_id,
+                    );
+                    if (!placeExists) {
+                        filteredPlacesForRegion.push(place);
+                    } else {
+                        console.log(
+                            `El lugar con id ${place.airbnb_id} ya existe en coda`,
+                        );
+                    
+                    }
+                });
+                region.places = filteredPlacesForRegion;
+                filteredPlacesData.push(region);
+            });
+        } catch (error) {
+            console.error(error);
+            throw new HttpException(
+                'Error al obtener los ids de la página',
+                500,
+            );
+        }
+
+        return filteredPlacesData;
     }
 }

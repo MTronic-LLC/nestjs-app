@@ -2,12 +2,16 @@ import { Body, Controller, Get, HttpException, HttpStatus, Post, Param } from "@
 import {ActorService} from "../service/actor.service";
 import {CodaService} from "../../../../coda/coda.service";
 import { LocationsByRegion } from "@mtronic-llc/fahs-common-test";
-import { LocationAvailabilityDtos, LocationAvailabilityDtosResponse } from "@mtronic-llc/fahs-common-test";
+import { LocationAvailabilityDtosResponse } from "@mtronic-llc/fahs-common-test";
 import { BackendActorAvailabilityQuery, BackendActorPlacesQuery} from '@mtronic-llc/fahs-common-test';
+import {AvailablePlaceService} from "src/database/stay-search-places/available-place.service";
 
 @Controller("fahs")
 export class FahsController {
-    constructor (private readonly actorService: ActorService, private readonly codaService: CodaService) {}
+    constructor (
+        private readonly actorService: ActorService, 
+        private readonly codaService: CodaService,
+    ) {}
 
     @Get('getAvailabilityOfPlacesOfInterest')
     async getAvailabilityOfPlacesOfInterest(): Promise<LocationAvailabilityDtosResponse[]> {
@@ -55,7 +59,9 @@ export class FahsController {
                 throw new HttpException('Alguna de las fechas no existe', 400);
             }
 
-            return await this.actorService.getAvailablePlacesFromRegions(body);
+            const resultPlaces: LocationsByRegion[] = await this.actorService.getAvailablePlacesFromRegions(body);
+            return resultPlaces;
+            //return this.codaService.filterExistingPlacesSavedInCoda(resultPlaces);
         } catch (error) {
             console.error(error);
             if (error instanceof HttpException) {
