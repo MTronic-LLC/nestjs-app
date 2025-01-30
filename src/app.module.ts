@@ -20,11 +20,11 @@ import { PlaceOfInterestAvailabilityController } from './database/availabilityOf
         ConfigModule.forRoot({ isGlobal: true }),
         MongooseModule.forRoot(process.env.MONGO_URI),
         MongoModule,
-        CodaModule,
         TrackingModule,
         FahsModule,
         ActorModule,
         ScheduleModule.forRoot(),
+        CodaModule
         /*PlaceModule*/
     ],
     controllers: [AppController, PlaceOfInterestAvailabilityController],

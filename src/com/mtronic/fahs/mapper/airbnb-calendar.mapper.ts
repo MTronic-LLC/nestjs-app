@@ -51,7 +51,6 @@ export class AirbnbCalendarMapper {
                     }
                 ));
             } catch (e) {
-                console.log(e);
                 locationAvailabilityDtos.push(new LocationAvailabilityDtosResponse(
                     new LocationAvailabilityDtoErrorResponse('Es posible que este dato ya no exista', airbnbLocationCalendarDto.id, '')
                 ));

@@ -62,7 +62,6 @@ export class JobService {
                 last_date: executionDate,
                 success: false
             });
-            console.error(e);
             throw e;
         }
         return savedData;
@@ -76,12 +75,17 @@ export class JobService {
             const places = combinedArray.filter((place, index, self) =>
                 index === self.findIndex((p) => p.id === place.id)
             );
+
+            console.log('lugares inactivos', places);
             
             const actorData = await this.ActorService.getAvailabilityOfPlacesOfInterest({
                 ids: places.map(place => place.id)
             });
+            
+
             actorData.data.forEach(async availabilityOfPlace => {
                 if (availabilityOfPlace.response.kind === 'LocationAvailabilityDtos') {
+                    console.log('availabilityOfPlace', availabilityOfPlace);
                     const { kind, ...responseData } = availabilityOfPlace.response;
                     const savedRow = places.find(place => place.id === availabilityOfPlace.response.id);
                     const mongoPlaceData = {
@@ -94,6 +98,7 @@ export class JobService {
                     await this.codaService.placeAvailabileAgainCodaWebHook(savedRow.rowID, responseData.id, savedRow.host, availabilityOfPlace.response.meses);
                 }
             })
+            console.log("end");
             return actorData;
         } catch (error) {
             //console.error('error obteniendo disponibilidad de lugares inactivos' + error);

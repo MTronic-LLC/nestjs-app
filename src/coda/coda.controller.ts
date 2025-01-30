@@ -1,12 +1,12 @@
 import { Controller, Get, Param } from "@nestjs/common";
 import { CodaService } from "./coda.service";
 import { CodaViewRowsResponseDto } from "./dto/coda/codaViewRows.dto";
-import { ActorService } from "src/com/mtronic/fahs/service/actor.service";
-
+import { JobService } from "src/jobs/jobs.service";
 @Controller("coda")
 export class codaController {
     constructor (
-        private readonly codaService: CodaService
+        private readonly codaService: CodaService,
+        private readonly jobService: JobService
     ) {}
     
     @Get('getRowsByView/:view')
@@ -17,6 +17,12 @@ export class codaController {
     @Get('getControlValueById/:id')
     async getControlValueById(@Param('id') id: string): Promise<any> {
         return await this.codaService.getControlValueById(id);
+    }
+
+    @Get('runNotificationJob')
+    async runNotificationJob() {
+        this.jobService.getAvailabilityOfUnavailablePlaces();
+        return { message: 'Job started' };
     }
 
     /*@Get('testnotify')

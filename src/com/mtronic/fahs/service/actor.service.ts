@@ -82,7 +82,6 @@ export class ActorService {
                 .mapAirbnbLocationCalendarDtoToLocationAvailabilityDto(airbnbLocationCalendarDtos);
             return new LocationAvailabilityDtosResponseBackend(locationAvailabilityDtosResponse, requestDate);
         } catch (error) {
-            console.error(error);
             throw new HttpException('Error al ejecutar el actor', 500);
         }
     }
