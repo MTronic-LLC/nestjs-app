@@ -101,6 +101,7 @@ export class CodaService {
                         }
                     },
                 );
+                console.log(response)
                 placesData = response.data.items
                     .map((item: any) => {
                         let currentPlaceId = item.values['c-OCMBG1whUA'];
@@ -218,6 +219,38 @@ export class CodaService {
                     "host": host,
                     "availabilty": availabilityString
                 }, 
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.configService.get<string>('CODA_API_KEY')}`,
+                    },
+                });
+                return response.data;
+            }
+        } catch (error) {
+            console.error("Error actualizando lugar en coda.", error);
+            throw error;
+        }
+    }
+
+    public async resumeOfAvailabilityOfPlacesJobCodaWebHook(countOfPlacesConsulted: number, countOfPlacesAvailable: number, error?: string) {
+        try {
+            const codaDocID = this.configService.get<string>('CODA_DOC_ID');
+            const payload: {
+                countOfPlacesConsulted: number,
+                countOfPlacesAvailable: number,
+                result: string
+            } = {
+                countOfPlacesConsulted,
+                countOfPlacesAvailable,
+                result: "success"
+            };
+
+            if (error !== undefined) {
+                payload.result = error;
+            }
+
+            if (codaDocID) {
+                const response = await axios.post(`https://coda.io/apis/v1/docs/${codaDocID}/hooks/automation/grid-auto-vX0XlLxRxP`, 
                 {
                     headers: {
                         Authorization: `Bearer ${this.configService.get<string>('CODA_API_KEY')}`,

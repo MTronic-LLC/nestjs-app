@@ -37,6 +37,8 @@ export class FahsService {
                 savedPlaces = await this.placeOfInterestAvailabilityModelService.getPlacesOfInteresAvailabilitytByIds(ids);
                 allPlaces = [...savedPlaces];
             }
+
+            console.log('savedPlaces', savedPlaces);
             
             const idsToGet = refresh ? ids : 
             ids.filter(id => {
@@ -44,11 +46,18 @@ export class FahsService {
                 if (place && !(place instanceof LocationAvailabilityDtoErrorResponse)) {
                     const updatedDate = new Date(place.updatedAt);
                     const timeDifference = currentDate.getTime() - updatedDate.getTime();
+                
+                    if (place.meses[0].mes !== currentDate.getMonth() + 1 || place.meses[0].año !== currentDate.getFullYear()) {
+                        return true;
+                    }
+
                     //Los lugares que han sido actualizados hace más de 24 horas serán consultados de nuevo
                     return timeDifference > 24 * 60 * 60 * 1000;
                 }
                 return place ? false : true;
             });
+
+            console.log('idsToGet', idsToGet);
 
             if (idsToGet.length > 0) {
                 const newPlacesData = await this.actorService.getAvailabilityOfPlacesOfInterest({ids: idsToGet});

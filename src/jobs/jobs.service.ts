@@ -68,6 +68,8 @@ export class JobService {
     }
 
     async getAvailabilityOfUnavailablePlaces(): Promise<LocationAvailabilityDtosResponseBackend> {
+        let countOfPlacesConsulted = 0;
+        let countOfPlacesAvailable = 0;
         try {
             const unavailablePlacesData = await this.codaService.getPlacesDataByPage('lugaresinactivos');
             const unavailableSavedPlacesData = await this.placeOfInterestAvailabilityModelService.getUnavailablePlaces();
@@ -75,17 +77,15 @@ export class JobService {
             const places = combinedArray.filter((place, index, self) =>
                 index === self.findIndex((p) => p.id === place.id)
             );
-
-            console.log('lugares inactivos', places);
             
             const actorData = await this.ActorService.getAvailabilityOfPlacesOfInterest({
                 ids: places.map(place => place.id)
             });
             
+            countOfPlacesConsulted = actorData.data.length;
 
             actorData.data.forEach(async availabilityOfPlace => {
                 if (availabilityOfPlace.response.kind === 'LocationAvailabilityDtos') {
-                    console.log('availabilityOfPlace', availabilityOfPlace);
                     const { kind, ...responseData } = availabilityOfPlace.response;
                     const savedRow = places.find(place => place.id === availabilityOfPlace.response.id);
                     const mongoPlaceData = {
@@ -96,12 +96,14 @@ export class JobService {
                     };
                     await this.placeOfInterestAvailabilityModelService.handleAvailabilityOfPlaceOfInterest(mongoPlaceData);
                     await this.codaService.placeAvailabileAgainCodaWebHook(savedRow.rowID, responseData.id, savedRow.host, availabilityOfPlace.response.meses);
+                    countOfPlacesAvailable++;
                 }
             })
-            console.log("end");
+            await this.codaService.resumeOfAvailabilityOfPlacesJobCodaWebHook(countOfPlacesConsulted, countOfPlacesAvailable);
             return actorData;
         } catch (error) {
             //console.error('error obteniendo disponibilidad de lugares inactivos' + error);
+            await this.codaService.resumeOfAvailabilityOfPlacesJobCodaWebHook(countOfPlacesConsulted, countOfPlacesAvailable, error);
             throw error;
         }
     }
