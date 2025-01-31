@@ -250,7 +250,7 @@ export class CodaService {
             }
 
             if (codaDocID) {
-                const response = await axios.post(`https://coda.io/apis/v1/docs/${codaDocID}/hooks/automation/grid-auto-vX0XlLxRxP`, 
+                const response = await axios.post(`https://coda.io/apis/v1/docs/${codaDocID}/hooks/automation/grid-auto-C7ZXwDhDuY`, payload,
                 {
                     headers: {
                         Authorization: `Bearer ${this.configService.get<string>('CODA_API_KEY')}`,
@@ -259,7 +259,6 @@ export class CodaService {
                 return response.data;
             }
         } catch (error) {
-            console.error("Error actualizando lugar en coda.", error);
             throw error;
         }
     }

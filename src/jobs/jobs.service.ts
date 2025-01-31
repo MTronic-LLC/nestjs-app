@@ -99,6 +99,7 @@ export class JobService {
                     countOfPlacesAvailable++;
                 }
             })
+            console.log("end");
             await this.codaService.resumeOfAvailabilityOfPlacesJobCodaWebHook(countOfPlacesConsulted, countOfPlacesAvailable);
             return actorData;
         } catch (error) {
