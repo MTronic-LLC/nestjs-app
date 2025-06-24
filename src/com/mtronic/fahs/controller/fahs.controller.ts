@@ -1,18 +1,20 @@
 import { Body, Controller, Get, HttpException, HttpStatus, Post, Param, Query } from "@nestjs/common";
 import {ActorService} from "../service/actor.service";
 import {CodaService} from "../../../../coda/coda.service";
-import { LocationDetailsDtos, LocationsByRegion } from "@mtronic-llc/fahs-common-test";
+import { LocationDetailsDtos, LocationsByRegion, LocationAvailabilitySavedDtosResponseBackend } from "@mtronic-llc/fahs-common-test";
 import { LocationAvailabilityDtosResponse } from "@mtronic-llc/fahs-common-test";
 import { BackendActorAvailabilityQuery, BackendActorPlacesQuery} from '@mtronic-llc/fahs-common-test';
 import {AvailablePlaceService} from "src/database/stay-search-places/available-place.service";
 import { AvailablePlace } from "src/database/stay-search-places/available-place-interface";
+import { FahsService } from "../service/fahs.service";
 
 @Controller("fahs")
 export class FahsController {
     constructor (
         private readonly actorService: ActorService, 
         private readonly codaService: CodaService,
-        private readonly availablePlaceService: AvailablePlaceService
+        private readonly availablePlaceService: AvailablePlaceService,
+        private readonly fahsService: FahsService
     ) {}
 
     @Get('getPlacesAvailability')
@@ -209,5 +211,9 @@ export class FahsController {
             console.error('Error rejecting places:', error);
             throw new HttpException('Error rejecting places', HttpStatus.INTERNAL_SERVER_ERROR);
         }   
+    }
+    @Post('getPlacesAvailability')
+    async getAvailabilityOfSavedPlacesOfInterestWithIds(@Body() body: {codaView: string, refresh: boolean}): Promise<LocationAvailabilitySavedDtosResponseBackend> {
+        return await this.fahsService.getPlacesAvailabilityByCodaView(body);
     }
 }

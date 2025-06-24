@@ -97,8 +97,11 @@ export class ActorService {
     public async queryAvailablePlaces(input: BackendActorPlacesQuery) {
         try {
             const places = await this.getAvailablePlacesFromRegions(input);
+            console.log('Available places count:', places.places.length);
             const filteredPlaces = await this.codaService.filterExistingPlacesSavedInCoda([places]);
-            const ids = await this.availablePlaceService.filterIdsByRejected(
+            console.log('Filtered places count:', filteredPlaces[0].places.length);
+            console.log("refreshed:", input.refresh);
+            const ids = await this.availablePlaceService.getEligiblePlaceIds(
                 filteredPlaces[0].places.map(place => place.airbnb_id),
                 input.refresh
             );
@@ -112,7 +115,7 @@ export class ActorService {
             for (const place of filteredPlaces[0].places) {
                 const placeAvailability = availability.find(calendar => calendar.response.id === place.airbnb_id);
                 if (placeAvailability && placeAvailability.response.kind === 'LocationAvailabilityDtos') {
-                    place.monthAvailability = placeAvailability.response.meses;
+                    place.monthAvailability = placeAvailability.response.monthAvailability;
                     finalPlaces.push(place);
                 }
             }

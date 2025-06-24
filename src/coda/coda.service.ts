@@ -2,8 +2,9 @@ import axios from 'axios';
 import { HttpException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { viewsId } from '../utils/constants';
-import { LocationsByRegion } from '@mtronic-llc/fahs-common-test';
+import { CodaViewRowsResponseDto } from './dto/coda/codaViewRows.dto';
 import * as filters from './coda.filters.json';
+import { CodaRow, LocationsByRegion, MonthData } from '@mtronic-llc/fahs-common-test';
 
 @Injectable()
 export class CodaService {
@@ -80,6 +81,187 @@ export class CodaService {
         }
     }
 
+    public async getPlacesDataByPage(page: string): Promise<CodaRow[]> {
+        const codaDocID = this.configService.get<string>('CODA_DOC_ID');
+        const tableId: string = viewsId[page];
+        if (codaDocID && tableId) {
+            const codaApiKey = this.configService.get<string>('CODA_API_KEY');
+            const headers: Record<string, string> = {
+                Authorization: `Bearer ${codaApiKey}`,
+            };
+            let placesData: CodaRow[] = [];
+
+            try {
+                const response = await axios.get(
+                    `https://coda.io/apis/v1/docs/${codaDocID}/tables/${tableId}/rows`,
+                    {
+                        headers,
+                        params: {
+                            sortBy: 'natural',
+                        }
+                    },
+                );
+                console.log(response)
+                placesData = response.data.items
+                    .map((item: any) => {
+                        let currentPlaceId = item.values['c-OCMBG1whUA'];
+                        if (!currentPlaceId.includes('datosDePrueba') && currentPlaceId !== '') {
+                            return {
+                                host: item.values['c-eoVyQYeGTB'],
+                                id: currentPlaceId,
+                                rowID: item.values['c-rGQPY4EYZV']
+                            };
+                        }
+                        return null;
+                    })
+                    .filter((id: string) => id != null);
+            } catch (error) {
+                console.error(error);
+                throw new HttpException(
+                    'Error al obtener los ids de la página',
+                    500,
+                );
+            }
+
+            if (placesData.length > 0) {
+                return placesData;
+            } else {
+                throw new HttpException(
+                    'No existen datos que cumplan con los filtros',
+                    404,
+                );
+            }
+        } else {
+            throw new HttpException('Página no encontrada', 404);
+        }
+    }
+
+    public async getPlacesDataByView(view: string): Promise<CodaViewRowsResponseDto> {
+        try {
+            const codaDocID = this.configService.get<string>('CODA_DOC_ID');
+            const tableId: string = viewsId[view];
+            if (codaDocID && tableId) {
+                const response = await axios.get(
+                    `https://coda.io/apis/v1/docs/${codaDocID}/tables/${tableId}/rows`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${this.configService.get<string>(
+                                'CODA_API_KEY',
+                            )}`,
+                        },
+                        params: {
+                            sortBy: 'natural',
+                        }
+                    },
+                );
+                return response.data;
+            } else if (codaDocID) {
+                const response = await axios.get(
+                    `https://coda.io/apis/v1/docs/${codaDocID}/tables/${view}/rows`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${this.configService.get<string>(
+                                'CODA_API_KEY'
+                            )}`,
+                        },
+                        params: {
+                            sortBy: 'natural',
+                        }
+                    },
+                );
+                return response.data;
+            } else {
+                throw new HttpException('Página no encontrada', 404);
+            }
+        }
+        catch (error) {
+            console.error(error);
+            throw new HttpException(
+                'Error al obtener los datos de la página',
+                500,
+            );
+        }
+    }
+    
+    public async getControlValueById(id: string): Promise<any> {
+        try {
+            const codaDocID = this.configService.get<string>('CODA_DOC_ID');
+            if (codaDocID) {
+                const response = await axios.get(`https://coda.io/apis/v1/docs/${codaDocID}/controls/${id}`, {
+                    headers: {
+                        Authorization: `Bearer ${this.configService.get<string>('CODA_API_KEY')}`,
+                    },
+                });
+                return response.data.value;
+            }
+        } catch (error) {
+            console.error(error);
+            throw new HttpException('Error al obtener el control', 500);
+        }
+    }
+    
+    public async placeAvailabileAgainCodaWebHook(rowID: number, airId: string, host: string, availability: MonthData[]): Promise<any> {
+        try {
+            const codaDocID = this.configService.get<string>('CODA_DOC_ID');
+            if (codaDocID) {
+                const monthAbr = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sept', 'Oct', 'Nov', 'Dic'];
+                let availabilityString = "";
+                for (let i = 0; i < availability.length; i++) {
+                    const month = availability[i];
+                    availabilityString += `${monthAbr[month.month - 1]}-${month.year.toString().slice(-2)}: ${Math.round(month.availabilityPercentage)}%`;
+                    if (i !== availability.length - 1) {
+                        availabilityString += ",\n"
+                    }
+                }
+                const response = await axios.post(`https://coda.io/apis/v1/docs/${codaDocID}/hooks/automation/grid-auto-Sj11iZpD8X`, {
+                    "rowID": rowID, 
+                    "id": airId,
+                    "host": host,
+                    "availabilty": availabilityString
+                }, 
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.configService.get<string>('CODA_API_KEY')}`,
+                    },
+                });
+                return response.data;
+            }
+        } catch (error) {
+            console.error("Error actualizando lugar en coda.", error);
+            throw error;
+        }
+    }
+
+    public async resumeOfAvailabilityOfPlacesJobCodaWebHook(countOfPlacesConsulted: number, countOfPlacesAvailable: number, error?: string) {
+        try {
+            const codaDocID = this.configService.get<string>('CODA_DOC_ID');
+            const payload: {
+                countOfPlacesConsulted: number,
+                countOfPlacesAvailable: number,
+                result: string
+            } = {
+                countOfPlacesConsulted,
+                countOfPlacesAvailable,
+                result: "success"
+            };
+
+            if (error !== undefined) {
+                payload.result = error;
+            }
+
+            if (codaDocID) {
+                const response = await axios.post(`https://coda.io/apis/v1/docs/${codaDocID}/hooks/automation/grid-auto-C7ZXwDhDuY`, payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${this.configService.get<string>('CODA_API_KEY')}`,
+                    },
+                });
+                return response.data;
+            }
+        } catch (error) {
+            throw error;
+        }
+    }
     public async getIdsOfPlacesByPage(page: string): Promise<string[]> {
         const codaDocID = this.configService.get<string>('CODA_DOC_ID');
         const tableId: string = viewsId[page];

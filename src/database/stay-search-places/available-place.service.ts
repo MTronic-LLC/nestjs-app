@@ -139,6 +139,28 @@ export class AvailablePlaceService {
         }
     }
 
+    async getEligiblePlaceIds(ids: string[], refresh: boolean): Promise<string[]> {
+        if (!ids || ids.length === 0) {
+            return [];
+        }
+
+        const places = await this.availablePlaceModel.find({
+            airbnb_id: { $in: ids }
+        }).exec();
+
+        const existingIds = new Set(places.map(place => place.airbnb_id));
+
+        if (refresh) {
+            return ids.filter(id => !existingIds.has(id));
+        } else {
+            const idsNotInDb = ids.filter(id => !existingIds.has(id));
+            const eligibleInDb = places
+                .filter(place => place.rejected === false && place.inCoda === false)
+                .map(place => place.airbnb_id);
+            return [...idsNotInDb, ...eligibleInDb];
+        }
+    }
+
     async filterIdsByRejected(ids: string[], refresh: boolean): Promise<string[]> {
         if (!ids || ids.length === 0) {
             return [];

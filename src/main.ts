@@ -5,7 +5,7 @@ import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.int
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
     const options: CorsOptions = {
-        origin: process.env.FRONTEND_URL,
+        origin: [process.env.FRONTEND_URL, process.env.VIEWMAP_URL],
         methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
         preflightContinue: false,
         optionsSuccessStatus: 204,
@@ -16,8 +16,9 @@ async function bootstrap() {
         console.log('Listening on port 3002');
         await app.listen(3002);
     }else{
-        console.log('Listening on port ' + process.env.PORT || '3001');
-        await app.listen(process.env.PORT || 3001);
+        const port = process.env.PORT || 3001;
+        console.log('Listening on port ' + port);
+        await app.listen(port); 
     }
 }
 bootstrap();

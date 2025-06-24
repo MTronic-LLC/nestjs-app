@@ -45,9 +45,9 @@ export class AirbnbCalendarMapper {
                     {
                         kind: 'LocationAvailabilityDtos',
                         id: airbnbLocationCalendarDto.id,
-                        proxSeisMeses: percentAvailForNext6Months,
+                        nextSixMonths: percentAvailForNext6Months,
                         host: '',
-                        meses: monthDataDtos
+                        monthAvailability: monthDataDtos
                     }
                 ));
             } catch (e) {

@@ -28,7 +28,7 @@ export class GetAndSaveAvailablePlacesService {
                     inCoda: false
                 };
                 if (availability.length > 0 && availability[0].response.kind === 'LocationAvailabilityDtos') {
-                    placeToSave.monthAvailability = availability[0].response.meses;
+                    placeToSave.monthAvailability = availability[0].response.monthAvailability;
                 }
                 await this.availablePlaceService.createPlace(placeToSave);
             })
