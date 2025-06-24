@@ -38,7 +38,7 @@ export class PlaceOfInterestAvailabilityModelService {
                 return null;
             }
             if (!updatedPlace.active && updateData.active) {
-                this.codaService.placeAvailabileAgainCodaWebHook(updateData.rowID, updateData.id, updateData.host, updateData.meses);
+                this.codaService.placeAvailabileAgainCodaWebHook(updateData.rowID, updateData.id, updateData.host, updateData.monthAvailability);
             }
             return updatedPlace.toObject() as MongoLocationAvailabilityDtos;
         } catch (error) {

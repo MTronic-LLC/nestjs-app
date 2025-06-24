@@ -42,17 +42,23 @@ export class FahsService {
             
             const idsToGet = refresh ? ids : 
             ids.filter(id => {
-                const place = allPlaces.find(savedPlace => savedPlace.id === id);
+                const index = allPlaces.findIndex(savedPlace => savedPlace.id === id);
+                const place = index !== -1 ? allPlaces[index] : undefined;
                 if (place && !(place instanceof LocationAvailabilityDtoErrorResponse)) {
                     const updatedDate = new Date(place.updatedAt);
                     const timeDifference = currentDate.getTime() - updatedDate.getTime();
-                
-                    if (place.meses[0].mes !== currentDate.getMonth() + 1 || place.meses[0].año !== currentDate.getFullYear()) {
+
+                    if (place.monthAvailability[0].month !== currentDate.getMonth() + 1 || place.monthAvailability[0].year !== currentDate.getFullYear()) {
+                        allPlaces.splice(index, 1);
                         return true;
                     }
 
-                    //Los lugares que han sido actualizados hace más de 24 horas serán consultados de nuevo
-                    return timeDifference > 24 * 60 * 60 * 1000;
+                    if (timeDifference > 24 * 60 * 60 * 1000) {
+                        allPlaces.splice(index, 1);
+                        return true;
+                    }
+
+                    return false;
                 }
                 return place ? false : true;
             });
@@ -61,7 +67,7 @@ export class FahsService {
 
             if (idsToGet.length > 0) {
                 const newPlacesData = await this.actorService.getAvailabilityOfPlacesOfInterest({ids: idsToGet});
-                newPlacesData.data.forEach(async placeData => {
+                newPlacesData.forEach(async placeData => {
                     const codaRow = codaRows.find(codaRow => codaRow.id === placeData.response.id);
                     if (placeData.response.kind === 'LocationAvailabilityDtos') {
                         const mongoPlaceData: MongoLocationAvailabilityDtos = {
@@ -72,6 +78,7 @@ export class FahsService {
                             active: true
                         }
                         allPlaces.push(mongoPlaceData);
+                        console.log("mongoPlaceData", mongoPlaceData.id);
                         this.placeOfInterestAvailabilityModelService.handleAvailabilityOfPlaceOfInterest(mongoPlaceData);
                     } else {
                         const mongoPlaceData = {
@@ -93,6 +100,10 @@ export class FahsService {
                 const indexB = ids.indexOf(b.id);
                 return indexA - indexB;
             });
+            console.log("refreshed:", refresh);
+            console.log(idsToGet.length, "idsToGet.length");
+            console.log(ids.length, "ids.length");
+            console.log("allPlaces", allPlaces.length);
             if (refresh || idsToGet.length >= (ids.length / 2)) {
                 await this.codaViewUpdateDateService.handleCodaViewUpdateData({
                     coda_view_id,

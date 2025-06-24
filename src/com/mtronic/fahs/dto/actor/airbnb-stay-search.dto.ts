@@ -1,6 +1,8 @@
+import { AirbnbLocationCalendarData } from "./airbnb-location-calendar.dto";
+
 export interface AirbnbStaySearchDto {
     city: string;
-    data: AirbnbStaySearchDtoData;
+    data: SearchResult[];
 }
 
 export interface AirbnbStaySearchDtoData {
@@ -13,106 +15,25 @@ export interface DataData {
 }
 
 export interface Presentation {
+    __typename:  string;
+    staysSearch: StaysSearch;
+}
+
+export interface StaysSearch {
     __typename: string;
-    explore:    Explore;
+    results:    Results;
+    mapResults: MapResults;
 }
 
-export interface Explore {
-    __typename: string;
-    sections:   Sections;
-}
-
-export interface Sections {
-    __typename:             string;
-    sections:               any[];
-    sectionsV2:             null;
-    screens:                any[];
-    screensV2:              null;
-    flows:                  any[];
-    metadata:               SectionsMetadata;
-    stateMutation:          StateMutation;
-    responseType:           string;
-    responseTransforms:     null;
-    sectionIndependentData: SectionIndependentData;
-}
-
-export interface SectionsMetadata {
-    __typename:     string;
-    debugMetadata:  any[];
-    errorData:      null;
-    loggingContext: MetadataLoggingContext;
-    pageMetadata:   PageMetadata;
-    pageTitle:      string;
-    theme:          string;
-}
-
-export interface MetadataLoggingContext {
-    __typename:               string;
-    federatedSearchId:        string;
-    federatedSearchSessionId: string;
-    pageLoggingContext:       PageLoggingContext;
-}
-
-export interface PageLoggingContext {
-    __typename:   string;
-    extraData:    ExtraData;
-    pageCategory: null;
-    pageType:     string;
-    pageVertical: string;
-}
-
-export interface ExtraData {
-    flex_mode:    string;
-    flex_version: string;
-}
-
-export interface PageMetadata {
-    __typename:          string;
-    androidAlternateUrl: string;
-    androidDeeplink:     string;
-    canonicalUrl:        null;
-    iphoneDeeplink:      string;
-    locationQuery:       boolean;
-    ogTags:              OgTags;
-    pageDescription:     string;
-    pageTitle:           string;
-    renderType:          string;
-    twitterTags:         TwitterTags;
-}
-
-export interface OgTags {
-    __typename:    string;
-    ogDescription: string;
-    ogImage:       string;
-    ogTitle:       string;
-    ogType:        string;
-    ogUrl:         string;
-}
-
-export interface TwitterTags {
-    __typename:         string;
-    twitterCard:        string;
-    twitterDescription: string;
-    twitterImage:       string;
-    twitterTitle:       string;
-    twitterUrl:         string;
-}
-
-export interface SectionIndependentData {
-    __typename:     string;
-    staysSearch:    StaysSearch;
-    staysMapSearch: StaysMapSearch;
-}
-
-export interface StaysMapSearch {
+export interface MapResults {
     __typename:       string;
     mapMetadata:      MapMetadata;
     mapSearchResults: SearchResult[];
     staysInViewport:  StaysInViewport[];
-    loggingMetadata:  StaysMapSearchLoggingMetadata;
+    loggingMetadata:  MapResultsLoggingMetadata;
 }
 
-export interface StaysMapSearchLoggingMetadata {
+export interface MapResultsLoggingMetadata {
     __typename:                   string;
     legacyLoggingBackendSearchId: string;
     legacyLoggingSectionId:       string;
@@ -128,6 +49,7 @@ export interface SearchResult {
     listing:               Listing;
     listingParamOverrides: null;
     pricingQuote:          PricingQuote;
+    availabilityCalendar: AirbnbLocationCalendarData
 }
 
 export enum MapSearchResultTypename {
@@ -136,9 +58,9 @@ export enum MapSearchResultTypename {
 
 export interface Listing {
     __typename:                 ListingTypename;
-    avgRatingA11yLabel:         null | string;
-    avgRatingLocalized:         null | string;
-    city:                       City;
+    avgRatingA11yLabel:         string;
+    avgRatingLocalized:         string;
+    city:                       string;
     contextualPictures:         ContextualPicture[];
     contextualPicturesCount:    number;
     contextualPicturesPageInfo: ContextualPicturesPageInfo;
@@ -146,26 +68,24 @@ export interface Listing {
     formattedBadges:            FormattedBadge[];
     id:                         string;
     listingObjType:             ListingObjType;
-    localizedCityName:          City;
+    localizedCityName:          string;
     name:                       string;
     pdpUrlType:                 PDPURLType;
     roomTypeCategory:           RoomTypeCategory;
     roomTypeId:                 null;
     structuredContent:          StructuredContent;
     tierId:                     number;
-    title:                      ListingTitle;
+    title:                      string;
     titleLocale:                TitleLocale;
     primaryHostPassport:        null;
+    queryCity: {
+        name: string;
+        id: string;
+    }
 }
 
 export enum ListingTypename {
     StaySearchResultListing = "StaySearchResultListing",
-}
-
-export enum City {
-    Miami = "Miami",
-    MiamiBeach = "Miami Beach",
-    NorthMiamiBeach = "North Miami Beach",
 }
 
 export interface ContextualPicture {
@@ -200,7 +120,7 @@ export enum CaptionTypename {
 
 export interface ContextualPicturesPageInfo {
     __typename:      ContextualPicturesPageInfoTypename;
-    endCursor:       EndCursor | null;
+    endCursor:       EndCursor;
     hasNextPage:     boolean;
     hasPreviousPage: boolean;
     startCursor:     null;
@@ -226,7 +146,7 @@ export enum CoordinateTypename {
 
 export interface FormattedBadge {
     __typename:     FormattedBadgeTypename;
-    loggingContext: FormattedBadgeLoggingContext;
+    loggingContext: LoggingContext;
     style:          Style;
     text:           TextEnum;
     textColor:      TextColor;
@@ -236,7 +156,7 @@ export enum FormattedBadgeTypename {
     ExploreFormattedBadge = "ExploreFormattedBadge",
 }
 
-export interface FormattedBadgeLoggingContext {
+export interface LoggingContext {
     __typename: LoggingContextTypename;
     badgeType:  BadgeType;
 }
@@ -256,7 +176,7 @@ export enum Style {
 }
 
 export enum TextEnum {
-    FavoritoEntreHuéspedes = "Favorito entre huéspedes",
+    FavoritoEntreHuéspedes = "Favorito entre huéspedes",
     Superanfitrión = "Superanfitrión",
 }
 
@@ -281,50 +201,39 @@ export enum RoomTypeCategory {
 export interface StructuredContent {
     __typename:       StructuredContentTypename;
     distance:         null;
-    mapCategoryInfo:  null;
-    mapPrimaryLine:   PrimaryLine[];
+    mapCategoryInfo:  MapCategoryInfo[] | null;
+    mapPrimaryLine:   MapCategoryInfo[] | null;
     mapSecondaryLine: null;
-    primaryLine:      PrimaryLine[];
-    secondaryLine:    null;
+    primaryLine:      MapCategoryInfo[] | null;
+    secondaryLine:    MapCategoryInfo[] | null;
 }
 
 export enum StructuredContentTypename {
     ExploreStructuredContent = "ExploreStructuredContent",
 }
 
-export interface PrimaryLine {
-    __typename:    MapPrimaryLineTypename;
-    body:          Body;
+export interface MapCategoryInfo {
+    __typename:    MapCategoryInfoTypename;
+    body:          string;
     bodyA11yLabel: null;
     bodyType:      null;
     fontWeight:    null;
     headline:      null;
-    type:          null;
+    type:          Type | null;
 }
 
-export enum MapPrimaryLineTypename {
+export enum MapCategoryInfoTypename {
     MainSectionMessage = "MainSectionMessage",
 }
 
-export enum Body {
-    The1Cama = "1 cama",
-    The1CamaTamañoKing = "1 cama tamaño king",
-    The1CamaTamañoQueen = "1 cama tamaño queen",
-    The2Camas = "2 camas",
-    The2CamasTamañoQueen = "2 camas tamaño queen",
-    The3Camas = "3 camas",
-}
-
-export enum ListingTitle {
-    CondominioEnMiami = "Condominio en Miami",
-    DepartamentoEnMiami = "Departamento en Miami",
-    DepartamentoEnNorthMiamiBeach = "Departamento en North Miami Beach",
-    ResidenciaEnMiami = "Residencia en Miami",
-    SuiteConEntradaIndependienteEnMiami = "Suite con entrada independiente en Miami",
+export enum Type {
+    Highlight = "HIGHLIGHT",
 }
 
 export enum TitleLocale {
-    Es419 = "es-419",
+    CA = "ca",
+    En = "en",
+    Es = "es",
 }
 
 export interface PricingQuote {
@@ -358,7 +267,7 @@ export interface Rate {
     amount:           number;
     amountFormatted:  null;
     currency:         null;
-    isMicrosAccuracy: boolean;
+    isMicrosAccuracy: null;
 }
 
 export enum RateTypename {
@@ -367,7 +276,7 @@ export enum RateTypename {
 
 export interface StructuredStayDisplayPrice {
     __typename:                             StructuredStayDisplayPriceTypename;
-    primaryLine:                            StructuredStayDisplayPricePrimaryLine;
+    primaryLine:                            PrimaryLine;
     secondaryLine:                          SecondaryLine;
     explanationData:                        ExplanationData;
     explanationDataDisplayPosition:         ExplanationDataDisplayPosition;
@@ -381,7 +290,7 @@ export enum StructuredStayDisplayPriceTypename {
 
 export interface ExplanationData {
     __typename:   ExplanationDataTypename;
-    title:        ExplanationDataTitle;
+    title:        Title;
     priceDetails: PriceDetail[];
 }
 
@@ -426,7 +335,7 @@ export enum ItemDisplayComponentType {
     DiscountedExplanationLineItem = "DISCOUNTED_EXPLANATION_LINE_ITEM",
 }
 
-export enum ExplanationDataTitle {
+export enum Title {
     DesgloseDelPrecio = "Desglose del precio",
 }
 
@@ -438,17 +347,17 @@ export enum Layout {
     RowWithSeparator = "ROW_WITH_SEPARATOR",
 }
 
-export interface StructuredStayDisplayPricePrimaryLine {
+export interface PrimaryLine {
     __typename:           FluffyTypename;
     displayComponentType: PrimaryLineDisplayComponentType;
     accessibilityLabel:   string;
-    price?:               string;
+    discountedPrice?:     string;
+    originalPrice?:       string;
     qualifier:            Qualifier;
     shortQualifier:       Qualifier;
     concatQualifierLeft:  boolean;
     trailingContent:      null;
-    discountedPrice?:     string;
-    originalPrice?:       string;
+    price?:               string;
 }
 
 export enum FluffyTypename {
@@ -466,14 +375,14 @@ export enum Qualifier {
 }
 
 export interface SecondaryLine {
-    __typename:           SecondaryLineTypename;
+    __typename:           TentacledTypename;
     displayComponentType: SecondaryLineDisplayComponentType;
     accessibilityLabel:   string;
     price:                string;
     trailingContent:      null;
 }
 
-export enum SecondaryLineTypename {
+export enum TentacledTypename {
     BasicDisplayPriceLine = "BasicDisplayPriceLine",
 }
 
@@ -494,14 +403,13 @@ export enum StaysInViewportTypename {
 
 export enum PinState {
     FullPin = "FULL_PIN",
-    MiniPin = "MINI_PIN",
 }
 
-export interface StaysSearch {
+export interface Results {
     __typename:           string;
     searchResults:        SearchResult[];
     paginationInfo:       PaginationInfo;
-    loggingMetadata:      StaysSearchLoggingMetadata;
+    loggingMetadata:      ResultsLoggingMetadata;
     pricingDisclaimer:    null;
     searchInput:          SearchInput;
     filters:              Filters;
@@ -512,9 +420,10 @@ export interface StaysSearch {
 }
 
 export interface CategoryBar {
-    __typename:       string;
-    allHomesCategory: Category;
-    categories:       Category[];
+    __typename:         string;
+    allHomesCategory:   Category;
+    categoryBarCacheId: string;
+    categories:         Category[];
 }
 
 export interface Category {
@@ -557,11 +466,11 @@ export enum ParamTypename {
 }
 
 export interface PurpleValue {
-    __typename:  TentacledTypename;
+    __typename:  ValueTypename;
     stringValue: string;
 }
 
-export enum TentacledTypename {
+export enum ValueTypename {
     BoolValue = "BoolValue",
     LongValue = "LongValue",
     StringValue = "StringValue",
@@ -575,7 +484,6 @@ export enum PurpleValueType {
 
 export enum TabID {
     AllTab = "all_tab",
-    HomeTab = "home_tab",
 }
 
 export interface Filters {
@@ -583,12 +491,12 @@ export interface Filters {
     allFiltersButton: AllFiltersButton;
     filterPanel:      FilterPanel;
     filterState:      FilterState[];
+    filterBar:        null;
 }
 
 export interface AllFiltersButton {
-    __typename:               string;
-    count:                    number;
-    legacyAllFiltersScreenId: string;
+    __typename: string;
+    count:      number;
 }
 
 export interface FilterPanel {
@@ -682,12 +590,12 @@ export interface FluffyParam {
     __typename: ParamTypename;
     inArray:    boolean;
     key:        string;
-    value:      FluffyValue | null;
+    value:      FluffyValue;
     valueType:  FluffyValueType;
 }
 
 export interface FluffyValue {
-    __typename:    TentacledTypename;
+    __typename:    ValueTypename;
     booleanValue?: boolean;
     longValue?:    string;
     stringValue?:  string;
@@ -761,7 +669,7 @@ export enum Key {
 }
 
 export interface TentacledValue {
-    __typename: TentacledTypename;
+    __typename: ValueTypename;
     longValue:  string;
 }
 
@@ -793,7 +701,7 @@ export interface StickyParam {
 }
 
 export interface StickyValue {
-    __typename:   TentacledTypename;
+    __typename:   ValueTypename;
     stringValue?: string;
     longValue?:   string;
 }
@@ -833,7 +741,7 @@ export interface FilterState {
     __typename: FilterStateTypename;
     isArray:    null;
     key:        string;
-    valueType:  FilterStateValueType;
+    valueType:  string;
     value:      FilterStateValue | null;
 }
 
@@ -842,7 +750,7 @@ export enum FilterStateTypename {
 }
 
 export interface FilterStateValue {
-    __typename:     IndigoTypename;
+    __typename:     string;
     stringValue?:   string;
     stringValues?:  string[];
     dateValue?:     Date;
@@ -851,38 +759,36 @@ export interface FilterStateValue {
     boolValue?:     boolean;
 }
 
-export enum IndigoTypename {
-    ExploreFilterStateBoolValue = "ExploreFilterStateBoolValue",
-    ExploreFilterStateDateValue = "ExploreFilterStateDateValue",
-    ExploreFilterStateIntegerValue = "ExploreFilterStateIntegerValue",
-    ExploreFilterStateIntegerValues = "ExploreFilterStateIntegerValues",
-    ExploreFilterStateStringValue = "ExploreFilterStateStringValue",
-    ExploreFilterStateStringValues = "ExploreFilterStateStringValues",
-}
-
-export enum FilterStateValueType {
-    Boolean = "BOOLEAN",
-    Date = "DATE",
-    Double = "DOUBLE",
-    Integer = "INTEGER",
-    IntegerArray = "INTEGER_ARRAY",
-    Long = "LONG",
-    LongArray = "LONG_ARRAY",
-    String = "STRING",
-    StringArray = "STRING_ARRAY",
-}
-
-export interface StaysSearchLoggingMetadata {
+export interface ResultsLoggingMetadata {
     __typename:             string;
     legacyLoggingSectionId: string;
     remarketingLoggingData: RemarketingLoggingData;
+    legacyLoggingContext:   LegacyLoggingContext;
+}
+
+export interface LegacyLoggingContext {
+    __typename:               string;
+    federatedSearchId:        string;
+    federatedSearchSessionId: string;
+    pageLoggingContext:       PageLoggingContext;
+}
+
+export interface PageLoggingContext {
+    __typename:   string;
+    extraData:    ExtraData;
+    pageCategory: null;
+    pageType:     string;
+    pageVertical: string;
+}
+
+export interface ExtraData {
 }
 
 export interface RemarketingLoggingData {
     __typename:        string;
     remarketingIds:    any[];
     canonicalLocation: string;
-    city:              City;
+    city:              string;
     state:             string;
     country:           string;
 }
@@ -890,7 +796,7 @@ export interface RemarketingLoggingData {
 export interface PaginationInfo {
     __typename:         string;
     pageCursors:        string[];
-    previousPageCursor: null;
+    previousPageCursor: string;
     nextPageCursor:     string;
 }
 
@@ -975,6 +881,8 @@ export interface Destination {
     __typename:           string;
     autocompleteVertical: string;
     destinationCards:     DestinationCards;
+    placeChips:           null;
+    placesByAreas:        null;
     refinementPath:       string;
     inputText:            string;
     placeholder:          string;
@@ -987,14 +895,14 @@ export interface DestinationCards {
 }
 
 export interface DestinationCardsItem {
-    __typename:          IndecentTypename;
+    __typename:          IndigoTypename;
     exploreSearchParams: AllHomesCategorySearchParams;
     imageUrl:            string;
     selected:            null;
     text:                string;
 }
 
-export enum IndecentTypename {
+export enum IndigoTypename {
     DestinationCardItem = "DestinationCardItem",
 }
 
@@ -1025,7 +933,7 @@ export interface SearchBar {
     __typename:         string;
     datesText:          string;
     guestsText:         string;
-    locationText:       City;
+    locationText:       string;
     microFlexDatesText: null;
 }
 
@@ -1059,13 +967,13 @@ export interface Trip {
 }
 
 export interface TripDatesItem {
-    __typename:          HilariousTypename;
+    __typename:          IndecentTypename;
     exploreSearchParams: AllHomesCategorySearchParams;
     subtitle?:           string;
     text:                string;
 }
 
-export enum HilariousTypename {
+export enum IndecentTypename {
     TripDatesItem = "TripDatesItem",
     TripLengthItem = "TripLengthItem",
 }
@@ -1090,7 +998,7 @@ export interface PurpleAdults {
 export interface WideSearchInput {
     __typename:        string;
     experiences:       WideSearchInputExperiences;
-    onlineExperiences: OnlineExperiences;
+    onlineExperiences: null;
     stays:             Stays;
 }
 
@@ -1113,14 +1021,6 @@ export interface Input {
     placeholder: string;
 }
 
-export interface OnlineExperiences {
-    __typename: string;
-    badge:      null;
-    id:         string;
-    label:      string;
-    url:        string;
-}
-
 export interface Stays {
     __typename:       string;
     datesInput:       StaysDatesInput;
@@ -1137,13 +1037,14 @@ export interface StaysDatesInput {
 }
 
 export interface SectionConfiguration {
-    __typename:        string;
-    alertSections:     null;
-    bottomSections:    null;
-    mapSection:        MapSection;
-    pageTitleSections: PageTitleSections;
-    topSections:       null;
-    footerSections:    null;
+    __typename:          string;
+    alertSections:       null;
+    bottomSections:      null;
+    mapSection:          MapSection;
+    pageTitleSections:   PageTitleSections;
+    topSections:         null;
+    footerSections:      null;
+    interleavedSections: null;
 }
 
 export interface MapSection {
@@ -1162,16 +1063,11 @@ export interface MapSectionSection {
 
 export interface FluffySectionData {
     __typename: string;
-    layers:     Layer[];
-    metadata:   SectionDataMetadata;
+    layers:     any[];
+    metadata:   Metadata;
 }
 
-export interface Layer {
-    __typename:             string;
-    sectionLoggingContexts: any[];
-}
-
-export interface SectionDataMetadata {
+export interface Metadata {
     __typename:             string;
     autoSearchEnabled:      boolean;
     fallbackMapCenter:      Coordinate;
@@ -1216,10 +1112,36 @@ export interface SEO {
     pageMetadata: PageMetadata;
 }
 
-export interface StateMutation {
-    __typename:  string;
-    modals:      any[];
-    filterState: FilterState[];
+export interface PageMetadata {
+    __typename:          string;
+    androidAlternateUrl: string;
+    androidDeeplink:     string;
+    canonicalUrl:        string;
+    iphoneDeeplink:      string;
+    locationQuery:       boolean;
+    ogTags:              OgTags;
+    pageDescription:     string;
+    pageTitle:           string;
+    renderType:          string;
+    twitterTags:         TwitterTags;
+}
+
+export interface OgTags {
+    __typename:    string;
+    ogDescription: string;
+    ogImage:       string;
+    ogTitle:       string;
+    ogType:        string;
+    ogUrl:         string;
+}
+
+export interface TwitterTags {
+    __typename:         string;
+    twitterCard:        string;
+    twitterDescription: string;
+    twitterImage:       string;
+    twitterTitle:       string;
+    twitterUrl:         string;
 }
 
 export interface Extensions {

@@ -5,13 +5,17 @@ import { CodaViewUpdateDateModule } from "src/database/availabilityOfPlaces/coda
 import { CodaService } from "src/coda/coda.service";
 import { ActorService } from "src/com/mtronic/fahs/service/actor.service";
 import { AirbnbCalendarMapper } from "src/com/mtronic/fahs/mapper/airbnb-calendar.mapper";
+import { AirbnbStaySearchMapper } from "src/com/mtronic/fahs/mapper/airbnb-stay-search.mapper";
+import { AvailablePlaceService } from "src/database/stay-search-places/available-place.service";
+import { AvailablePlaceModule } from "src/database/stay-search-places/available-place.module";
 @Module({
-    imports: [PlaceOfInterestAvailabilityModelModule, CodaViewUpdateDateModule],
+    imports: [PlaceOfInterestAvailabilityModelModule, CodaViewUpdateDateModule, AvailablePlaceModule],
     providers: [
         JobService,
         CodaService,
         ActorService,
-        AirbnbCalendarMapper
+        AirbnbCalendarMapper,
+        AirbnbStaySearchMapper
     ],
     exports: [JobService]
 })
