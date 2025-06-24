@@ -10,7 +10,7 @@ export class GetAndSaveAvailablePlaceController {
         private readonly actorService: ActorService
     ) {}
 
-    @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
+    /*@Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
     async getAndSaveAvailablePlaces(): Promise<void> {
         const today = new Date();
         const checkin = today.toISOString().split('T')[0];
@@ -18,8 +18,9 @@ export class GetAndSaveAvailablePlaceController {
         const mappedArrayOfPlaces = await this.actorService.getAvailablePlacesFromRegions({
             regions: ['Miami'],
             checkin,
-            checkout
+            checkout,
+            pagesToFetch: 1
         })
         this.getAndSAveAvailablePlaceService.getAndSaveAvailablePlaces(mappedArrayOfPlaces);
-    }
+    }*/
 }

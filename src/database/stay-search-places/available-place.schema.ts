@@ -8,6 +8,13 @@ export const AvailablePlaceSchema = new Schema({
     localizedCity: String,
     name: String,
     accommodationType: String,
+    inCoda: {type: Boolean, default: false},
+    queryCity: {
+        type: {
+            name: String, 
+            id: String
+        }
+    },
     coordinates: {
         type: {
             latitude: Number,
@@ -15,6 +22,7 @@ export const AvailablePlaceSchema = new Schema({
         }
     },
     averageRating: String,
+    rejected: {type: Boolean, default: false},
     picturesUrl: [String],
     availabilityDates: {
         type: {
@@ -22,12 +30,15 @@ export const AvailablePlaceSchema = new Schema({
             checkout: String
         }
     },
-    availability: {
-        nextSixMonths: Number,
-        months: [{
-            year: Number,
-            month: Number,
-            availabilityPercentage: Number
+    monthAvailability: [{
+        year: Number,
+        month: Number,
+        availabilityPercentage: Number,
+        dates: [{
+            day: String,
+            date: String,
+            availableForCheckin: Boolean,
+            available: Boolean
         }]
-    }
+    }]
 }, {timestamps: true});

@@ -24,20 +24,11 @@ export class GetAndSaveAvailablePlacesService {
                 });
                 const placeToSave: AvailablePlace = {
                     ...place,
-                    availability: {
-                        nextSixMonths: 0,
-                        months: [{month: 0, year: 0, availabilityPercentage: 0}]
-                    }
+                    monthAvailability: [],
+                    inCoda: false
                 };
                 if (availability.length > 0 && availability[0].response.kind === 'LocationAvailabilityDtos') {
-                    placeToSave.availability = {
-                        nextSixMonths: availability[0].response.proxSeisMeses,
-                        months: availability[0].response.meses.map(month => ({
-                            month: month.mes,
-                            year: month.año,
-                            availabilityPercentage: month.porcentajeDisponibilidad
-                        }))
-                    };
+                    placeToSave.monthAvailability = availability[0].response.meses;
                 }
                 await this.availablePlaceService.createPlace(placeToSave);
             })

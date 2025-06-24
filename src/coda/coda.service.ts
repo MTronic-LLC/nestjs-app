@@ -100,7 +100,6 @@ export class CodaService {
                 placesId = response.data.items
                     .map((item: any) => {
                         let currentPlaceId = item.values['c-OCMBG1whUA'];
-                        console.log(item.values['c-eoVyQYeGTB']);
                         if (!currentPlaceId.includes('datosDePrueba') && currentPlaceId !== '') {
                             return currentPlaceId;
                         }
@@ -142,7 +141,7 @@ export class CodaService {
                 {
                     headers,
                 },
-            );
+            )
             placesData.forEach((region: LocationsByRegion) => {
                 let filteredPlacesForRegion = [];
                 region.places.forEach((place) => {

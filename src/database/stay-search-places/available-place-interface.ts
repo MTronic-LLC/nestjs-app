@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { MonthData } from "@mtronic-llc/fahs-common-test";
 
 interface Coordinates {
   latitude: number;
@@ -8,6 +8,7 @@ interface Coordinates {
 interface AvailabilityDates {
   checkin: string;
   checkout: string;
+  availabilityPercent: number;
 }
 
 interface MonthAvailability {
@@ -33,5 +34,11 @@ export interface AvailablePlace {
   averageRating: string;
   picturesUrl: string[];
   availabilityDates: AvailabilityDates;
-  availability: Availability;
+  inCoda?: boolean;
+  rejected?: boolean;
+  queryCity: {
+    name: string;
+    id: string;
+  };
+  monthAvailability: MonthData[];
 }

@@ -8,6 +8,6 @@ import { AvailablePlaceService } from "./available-place.service";
     imports: [MongooseModule.forFeature([{ name: 'Place', schema: AvailablePlaceSchema }])],
     providers: [AvailablePlaceService],
     controllers: [AvailablePlaceController],
-    exports: [AvailablePlaceService]
+    exports: [AvailablePlaceService, MongooseModule]
 })
 export class AvailablePlaceModule {}

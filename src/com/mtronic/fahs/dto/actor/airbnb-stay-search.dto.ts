@@ -1,6 +1,8 @@
+import { AirbnbLocationCalendarData } from "./airbnb-location-calendar.dto";
+
 export interface AirbnbStaySearchDto {
     city: string;
-    data: AirbnbStaySearchDtoData[];
+    data: SearchResult[];
 }
 
 export interface AirbnbStaySearchDtoData {
@@ -47,6 +49,7 @@ export interface SearchResult {
     listing:               Listing;
     listingParamOverrides: null;
     pricingQuote:          PricingQuote;
+    availabilityCalendar: AirbnbLocationCalendarData
 }
 
 export enum MapSearchResultTypename {
@@ -75,6 +78,10 @@ export interface Listing {
     title:                      string;
     titleLocale:                TitleLocale;
     primaryHostPassport:        null;
+    queryCity: {
+        name: string;
+        id: string;
+    }
 }
 
 export enum ListingTypename {
