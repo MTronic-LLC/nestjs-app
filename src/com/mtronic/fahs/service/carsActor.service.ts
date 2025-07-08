@@ -62,7 +62,7 @@ export class CarsActorService {
                 ]
             }
         })
-        this.codaService.createRowsInCodaTable(
+        await this.codaService.createRowsInCodaTable(
             'RyXHMyO6K8',
             'grid-l-ZJ2OheaK',
             rows
