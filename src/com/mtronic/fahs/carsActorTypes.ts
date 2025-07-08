@@ -6,6 +6,18 @@ interface CarsActorInput {
     minDaysOnMarket: number;
 }
 
+interface CarActorResponse {
+    id: string;
+    title: string;
+    year: string;
+    price: string;
+    image: string;
+    dealer: string;
+    mapUrl: string;
+    daysOnMarket: number;
+}
+
 export {
-    CarsActorInput
+    CarsActorInput,
+    CarActorResponse
 }

@@ -262,4 +262,27 @@ export class CodaService {
             throw error;
         }
     }
+    public async createRowsInCodaTable(
+        docId: string, 
+        tableId: string, 
+        rows: {
+          cells: {
+            value: string,
+            column: string
+          }[]
+        }[]
+    ) {
+        const response = await axios.post(
+            `https://coda.io/apis/v1/docs/${docId}/tables/${tableId}/rows`,
+            {
+                rows
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${this.configService.get<string>('CODA_API_KEY')}`,
+                },
+            }
+        );
+        console.log(response.data);
+    }
 }
