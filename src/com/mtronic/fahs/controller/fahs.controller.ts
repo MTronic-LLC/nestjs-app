@@ -1,15 +1,17 @@
-import { Body, Controller, Get, HttpException, HttpStatus, Post, Param } from "@nestjs/common";
+import { Body, Controller, Get, HttpException, HttpStatus, Post, Param, Query } from "@nestjs/common";
 import {ActorService} from "../service/actor.service";
 import {CodaService} from "../../../../coda/coda.service";
 import { LocationAvailabilityDtosRequest, LocationAvailabilityDtosResponseBackend, LocationAvailabilitySavedDtosResponseBackend } from "@mtronic-llc/fahs-common-test";
 import { BackendActorAvailabilityQuery } from '@mtronic-llc/fahs-common-test';
 import { FahsService } from "../service/fahs.service";
+import { CarsActorService } from "../service/carsActor.service";
 @Controller("fahs")
 export class FahsController {
     constructor (
         private readonly actorService: ActorService, 
         private readonly codaService: CodaService,
         private readonly fahsService: FahsService,
+        private readonly carsActorService: CarsActorService
     ) {}
 
     @Get('getAvailabilityOfPlacesOfInterest')
@@ -75,6 +77,48 @@ export class FahsController {
     @Post('getPlacesAvailability')
     async getAvailabilityOfSavedPlacesOfInterestWithIds(@Body() body: {codaView: string, refresh: boolean}): Promise<LocationAvailabilitySavedDtosResponseBackend> {
         return await this.fahsService.getPlacesAvailabilityByCodaView(body);
+    }
+
+    @Get('getCars')
+    async getCars(
+        @Query('dealers') dealers: string | string[],
+        @Query('brands') brands: string | string[],
+        @Query('minDaysOnMarket') minDaysOnMarket: string,
+        @Query('maxDaysOnMarket') maxDaysOnMarket: string,
+        @Query('distance') distance: string
+    ): Promise<any> {
+        if (
+            !dealers ||
+            !brands ||
+            !minDaysOnMarket ||
+            !maxDaysOnMarket ||
+            !distance
+        ) {
+            throw new HttpException(
+                'All parameters (dealers, brands, minDaysOnMarket, maxDaysOnMarket, distance) are required',
+                HttpStatus.BAD_REQUEST
+            );
+        }
+        try {
+            return await this.carsActorService.getActorResults({
+                dealers: Array.isArray(dealers) ? dealers : [dealers],
+                brands: Array.isArray(brands) ? brands : [brands],
+                minDaysOnMarket: Number(minDaysOnMarket),
+                maxDaysOnMarket: Number(maxDaysOnMarket),
+                distance: Number(distance)
+            });
+        }
+        catch (error) {
+            if (error instanceof HttpException) {
+                throw error;
+            } else {
+                console.error('Error al obtener los datos del actor', error);
+                throw new HttpException(
+                    'Error al obtener los datos del actor',
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                );
+            }
+        }
     }
 
     /*@Get('getPlacesDataByCodaPage/:page')
