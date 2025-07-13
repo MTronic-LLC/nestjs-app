@@ -24,58 +24,45 @@ export class CarsActorService {
         const {items: CarsActorQueryDto} = await apifyClient.dataset(runActor.defaultDatasetId).listItems();
         console.log('Actor results:', CarsActorQueryDto);
         const results = this.carsActorQueryMapper.mapCarQueryResponseToCarCodaRow(CarsActorQueryDto as unknown as CarsActorQueryDto[]);
-        const rows = results.map((car) => {
-            return {
-                cells: [
-                    {
-                        column: "c-xm_QDr_YdW",
-                        value: String(car.id)
-                    },
-                    {
-                        column: "c-iN-7ozGZIV",
-                        value: car.image
-                    },
-                    {
-                        column: "c-gE6_9VvMLx",
-                        value: String(car.daysOnMarket)
-                    },
-                    {
-                        column: "c-3lPsImkzmq",
-                        value: car.mapUrl
-                    },
-                    {
-                        column: "c-gbsFw8ZAmZ",
-                        value: car.dealer
-                    },
-                    {
-                        column: "c-fGI5l_2zQS",
-                        value: car.price
-                    },
-                    {
-                        column: "c-m3gt0cybrQ",
-                        value: String(car.year)
-                    }, 
-                    {
-                        column: "c-asiSocGYjd",
-                        value: car.title
-                    },
-                    {
-                        column: "c-nkjIHRCuzB",
-                        value: String(car.mileage)
-                    },
-                    {
-                        column: "c-fDOEyFOrvo",
-                        value: String(car.distance)
-                    }
-                ]
-            }
-        })
-        await this.codaService.createRowsInCodaTable(
+        const codaTableRow = await this.codaService.getTableRows(
             'RyXHMyO6K8',
-            'grid-l-ZJ2OheaK',
-            rows
-        )
+            'grid-l-ZJ2OheaK'
+        );
+
+        const existingIds = new Set(
+            (codaTableRow ?? []).map(row => String(row.values["c-xm_QDr_YdW"]))
+        );
+
+        const rows = results
+            .filter(car => !existingIds.has(String(car.id)))
+            .map((car) => ({
+                cells: [
+                    { column: "c-xm_QDr_YdW", value: String(car.id) },
+                    { column: "c-iN-7ozGZIV", value: car.image },
+                    { column: "c-gE6_9VvMLx", value: String(car.daysOnMarket) },
+                    { column: "c-3lPsImkzmq", value: car.mapUrl },
+                    { column: "c-gbsFw8ZAmZ", value: car.dealer },
+                    { column: "c-fGI5l_2zQS", value: car.price },
+                    { column: "c-m3gt0cybrQ", value: String(car.year) },
+                    { column: "c-asiSocGYjd", value: car.title },
+                    { column: "c-nkjIHRCuzB", value: String(car.mileage) },
+                    { column: "c-fDOEyFOrvo", value: String(car.distance) }
+                ]
+            }));
+        
         let message = `Actor results processed successfully. ${results.length} cars found.`;
+
+        if (rows.length > 0) {
+            await this.codaService.createRowsInCodaTable(
+                'RyXHMyO6K8',
+                'grid-l-ZJ2OheaK',
+                rows
+            )
+        }
+        else 
+        {
+            message = 'No new cars found to add to Coda table.';
+        }
         if (results.length === 0) {
             message = 'No cars found for the given criteria.';
         }

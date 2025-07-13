@@ -285,4 +285,19 @@ export class CodaService {
         );
         console.log(response.data);
     }
+
+    public async getTableRows(
+        docId: string,
+        tableId: string
+    ): Promise<any> {
+        const response = await axios.get(
+            `https://coda.io/apis/v1/docs/${docId}/tables/${tableId}/rows`,
+            {
+                headers: {
+                    Authorization: `Bearer ${this.configService.get<string>('CODA_API_KEY')}`,
+                },
+            }
+        );
+        return response.data.items;
+    }
 }
