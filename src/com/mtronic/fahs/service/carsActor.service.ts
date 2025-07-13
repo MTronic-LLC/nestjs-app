@@ -58,6 +58,14 @@ export class CarsActorService {
                     {
                         column: "c-asiSocGYjd",
                         value: car.title
+                    },
+                    {
+                        column: "c-nkjIHRCuzB",
+                        value: String(car.mileage)
+                    },
+                    {
+                        column: "c-fDOEyFOrvo",
+                        value: String(car.distance)
                     }
                 ]
             }
@@ -67,9 +75,13 @@ export class CarsActorService {
             'grid-l-ZJ2OheaK',
             rows
         )
+        let message = `Actor results processed successfully. ${results.length} cars found.`;
+        if (results.length === 0) {
+            message = 'No cars found for the given criteria.';
+        }
         return {
             "success": true,
-            "message": "Actor results processed successfully"
+            "message": message
         };
     }
 }

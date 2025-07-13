@@ -4,6 +4,11 @@ interface CarsActorInput {
     distance: number;
     maxDaysOnMarket: number;
     minDaysOnMarket: number;
+    mileage?: number;
+    zip?: number;
+    startYear?: number;
+    endYear?: number;
+    colors?: string[]
 }
 
 interface CarActorResponse {
@@ -15,6 +20,8 @@ interface CarActorResponse {
     dealer: string;
     mapUrl: string;
     daysOnMarket: number;
+    mileage: number;
+    distance: number;
 }
 
 export {

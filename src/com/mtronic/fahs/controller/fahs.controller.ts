@@ -5,6 +5,7 @@ import { LocationAvailabilityDtosRequest, LocationAvailabilityDtosResponseBacken
 import { BackendActorAvailabilityQuery } from '@mtronic-llc/fahs-common-test';
 import { FahsService } from "../service/fahs.service";
 import { CarsActorService } from "../service/carsActor.service";
+import { CarsActorInput } from "../carsActorTypes";
 @Controller("fahs")
 export class FahsController {
     constructor (
@@ -85,7 +86,12 @@ export class FahsController {
         @Query('brands') brands: string | string[],
         @Query('minDaysOnMarket') minDaysOnMarket: string,
         @Query('maxDaysOnMarket') maxDaysOnMarket: string,
-        @Query('distance') distance: string
+        @Query('distance') distance: string,
+        @Query('mileage') mileage?: string,
+        @Query('zip') zip?: string,
+        @Query('startYear') startYear?: string,
+        @Query('endYear') endYear?: string,
+        @Query('colors') colors?: string | string[]
     ): Promise<any> {
         if (
             !dealers ||
@@ -100,13 +106,35 @@ export class FahsController {
             );
         }
         try {
-            return await this.carsActorService.getActorResults({
+            const input: CarsActorInput = {
                 dealers: Array.isArray(dealers) ? dealers : [dealers],
                 brands: Array.isArray(brands) ? brands : [brands],
                 minDaysOnMarket: Number(minDaysOnMarket),
                 maxDaysOnMarket: Number(maxDaysOnMarket),
                 distance: Number(distance)
-            });
+            };
+
+            if (mileage) {
+                input.mileage = Number(mileage);
+            }
+
+            if (zip) {
+                input.zip = Number(zip);
+            }
+
+            if (startYear) {
+                input.startYear = Number(startYear);
+            }
+
+            if (endYear) {
+                input.endYear = Number(endYear);
+            }
+
+            if (colors) {
+                input.colors = Array.isArray(colors) ? colors : [colors];
+            }
+
+            return await this.carsActorService.getActorResults(input);
         }
         catch (error) {
             if (error instanceof HttpException) {

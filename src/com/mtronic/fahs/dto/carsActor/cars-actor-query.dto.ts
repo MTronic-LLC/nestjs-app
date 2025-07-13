@@ -11,6 +11,7 @@ export interface CarsActorQueryDto {
     listingSearchSessionId:           string;
     search:                           Search;
     searchForm:                       SearchForm;
+    searchRegion:                     Region;
     internalUserOnlyData:             InternalUserOnlyData;
     filters:                          Filters;
     adContext:                        AdContext;
@@ -72,49 +73,54 @@ export interface EnvironmentInfoDto {
 }
 
 export interface MvtExperiments {
+    VDP_STICKYFOOTER_DD_CTA:              AdsLoadLibraryPostOnetrustLoad;
     VS_TEST_NEW_USER:                     string;
-    DD_WIZARD_INTG:                       AppAaTest;
-    SSR_PROXY_MIGRATION_POC:              AppAaTest;
+    DD_WIZARD_INTG:                       AdsLoadLibraryPostOnetrustLoad;
+    DRT_PROXY_MIGRATION:                  string;
+    SSR_PROXY_MIGRATION_POC:              AdsLoadLibraryPostOnetrustLoad;
     CF_RECOMMENDED_LISTINGS_DASHBOARD:    string;
-    SORT_TEST_LTV1:                       AppAaTest;
-    SRP_PRICE_DROP_NEW_ARRIVAL_BADGES:    AppAaTest;
-    SNOWTYPE_HOMEPAGE:                    AppAaTest;
+    SORT_TEST_LTV1:                       AdsLoadLibraryPostOnetrustLoad;
+    SRP_PRICE_DROP_NEW_ARRIVAL_BADGES:    AdsLoadLibraryPostOnetrustLoad;
+    MVT_ADMIN_SSR_PROXY_MIGRATION:        string;
+    SNOWTYPE_HOMEPAGE:                    AdsLoadLibraryPostOnetrustLoad;
     CF_LOGIN_PARITY_2:                    string;
-    VDP_ONSITE_ADS_TEST:                  AppAaTest;
-    SPONSORED_LISTINGS_OPT_TEST:          AppAaTest;
+    VDP_ANONYMIZED_LEADS_MESSAGING:       AdsLoadLibraryPostOnetrustLoad;
+    VDP_ONSITE_ADS_TEST:                  AdsLoadLibraryPostOnetrustLoad;
+    SPONSORED_LISTINGS_OPT_TEST:          AdsLoadLibraryPostOnetrustLoad;
     SRP_WEB_AD_TEST:                      string;
     VDP_WEB_AD_TEST:                      string;
     LEAD_BUILDER_V2:                      string;
-    SORT_TEST_HIF:                        AppAaTest;
-    SUPPRESSED_PRIMARY_OFFER:             AppAaTest;
+    SORT_TEST_HIF:                        AdsLoadLibraryPostOnetrustLoad;
+    SUPPRESSED_PRIMARY_OFFER:             string;
     AUTOSHOW_USES_ORCHESTRATION:          string;
     SEARCH_AS_FILTERS_TEST3:              string;
     CF_FOS_OFFER_DETAILS:                 string;
     LEAD_FORM_INPUT_VALIDATION:           string;
+    SIGN_IN_MODAL_SWAP:                   AdsLoadLibraryPostOnetrustLoad;
     SMC_LANDING_PAGE_BUTTON:              string;
-    PRSN_DS_GEN_AI_REC_TITLES:            AppAaTest;
+    PRSN_DS_GEN_AI_REC_TITLES:            AdsLoadLibraryPostOnetrustLoad;
     DISABLE_ADS_CLEAR_TARGETING:          string;
+    IDG_CADD_NO_LOGIN:                    AdsLoadLibraryPostOnetrustLoad;
     MARKETING_VIRAL_SO_JUNE2025:          string;
-    MCAS_CREATE_ACCOUNT_GATE:             AppAaTest;
-    APP_AA_TEST:                          AppAaTest;
-    SIP_SNOWPLOW_SECONDARY_PIPELINE:      AppAaTest;
+    MCAS_CREATE_ACCOUNT_GATE:             AdsLoadLibraryPostOnetrustLoad;
+    APP_AA_TEST:                          AdsLoadLibraryPostOnetrustLoad;
+    SIP_SNOWPLOW_SECONDARY_PIPELINE:      AdsLoadLibraryPostOnetrustLoad;
     TOP_DEALER_AWARDS_2024:               string;
-    SITE_LPO_BUILDER_MVT:                 AppAaTest;
-    SHOPPER_CONTACT_INFO:                 AppAaTest;
+    SITE_LPO_BUILDER_MVT:                 AdsLoadLibraryPostOnetrustLoad;
+    SHOPPER_CONTACT_INFO:                 AdsLoadLibraryPostOnetrustLoad;
     APP_TYPEAHEAD_MEILI_VS_OPEN_2:        string;
     SIP_SNOWPLOW_PRIMARY_PIPELINE_SWITCH: string;
-    VDP_ABOVE_THE_FOLD_NEW_INFOBLOCK:     AppAaTest;
-    CF_PREQUAL_FILTER_TOGGLE:             AppAaTest;
+    VDP_ABOVE_THE_FOLD_NEW_INFOBLOCK:     AdsLoadLibraryPostOnetrustLoad;
+    CF_PREQUAL_FILTER_TOGGLE:             string;
+    ADS_LOAD_LIBRARY_POST_ONETRUST_LOAD:  AdsLoadLibraryPostOnetrustLoad;
     CF_BHPH_PHASE_1:                      string;
-    PLX_KMX:                              string;
     REMOVE_MARKETING_VIRAL:               string;
-    RTL_SALE_SECTION_TILE:                string;
     SORT_TEST_NEW_CAR_V2:                 string;
     CF_RECOMMENDED_LISTINGS_VDP:          string;
     LEAD_NUDGE:                           string;
 }
 
-export enum AppAaTest {
+export enum AdsLoadLibraryPostOnetrustLoad {
     Default = "DEFAULT",
 }
 
@@ -127,7 +133,6 @@ export interface SEOExperimentsV2 {
     EXPAND_SPT_EXPERIMENT2:                    string;
     SEOC_2936_CF_CHASSIS_2_US:                 string;
     SPT_REMOVE_FEATURED_LISTINGS:              string;
-    SEOC_3479_UGC_AI_SUMMARY_TEST:             string;
     SRP_ENTITY_FACTS_CAR_MODEL:                string;
     SRP_CANONICAL_LOGIC:                       string;
     SEOC_3724_SRP_NEW_MODEL_METADATA_TEST:     string;
@@ -144,44 +149,45 @@ export interface SEOExperimentsV2 {
 }
 
 export interface Filters {
-    BODY_TYPE_GROUP:            BodyTypeGroup;
-    COLOR:                      BodyTypeGroup;
+    BODY_TYPE_GROUP:            BODYTYPEGROUPClass;
+    COLOR:                      BODYTYPEGROUPClass;
     DAYS_ON_MARKET:             DaysOnMarket;
-    DEAL_RATING:                BodyTypeGroup;
-    DRIVETRAIN:                 BodyTypeGroup;
-    FINANCE_PARTNERS:           BodyTypeGroup;
+    DEAL_RATING:                BODYTYPEGROUPClass;
+    DRIVETRAIN:                 BODYTYPEGROUPClass;
+    FINANCE_PARTNERS:           BODYTYPEGROUPClass;
     FUEL_CONSUMPTION:           DaysOnMarket;
-    FUEL_TYPE:                  BodyTypeGroup;
-    HAS_PHOTOS:                 BodyTypeGroup;
-    HAS_ACCIDENTS:              BodyTypeGroup;
-    HAS_RECENT_PRICE_DROPS:     BodyTypeGroup;
-    HAS_FRAME_DAMAGE:           BodyTypeGroup;
-    HAS_THEFT_HISTORY:          BodyTypeGroup;
-    HAS_FINANCING:              BodyTypeGroup;
-    INTERIOR_COLOR:             BodyTypeGroup;
-    IS_FLEET:                   BodyTypeGroup;
-    IS_LEMON:                   BodyTypeGroup;
-    IS_SALVAGE:                 BodyTypeGroup;
-    IS_SINGLE_OWNER:            BodyTypeGroup;
-    SHOP_BY_TYPE:               BodyTypeGroup;
+    FUEL_TYPE:                  BODYTYPEGROUPClass;
+    HAS_PHOTOS:                 BODYTYPEGROUPClass;
+    HAS_ACCIDENTS:              BODYTYPEGROUPClass;
+    HAS_RECENT_PRICE_DROPS:     BODYTYPEGROUPClass;
+    HAS_FRAME_DAMAGE:           BODYTYPEGROUPClass;
+    HAS_THEFT_HISTORY:          BODYTYPEGROUPClass;
+    HAS_FINANCING:              BODYTYPEGROUPClass;
+    INTERIOR_COLOR:             BODYTYPEGROUPClass;
+    IS_FLEET:                   BODYTYPEGROUPClass;
+    IS_LEMON:                   BODYTYPEGROUPClass;
+    IS_SALVAGE:                 BODYTYPEGROUPClass;
+    IS_SINGLE_OWNER:            BODYTYPEGROUPClass;
+    SHOP_BY_TYPE:               BODYTYPEGROUPClass;
     MILEAGE:                    DaysOnMarket;
     PRICE:                      DaysOnMarket;
-    NUMBER_OF_DOORS:            BodyTypeGroup;
-    TRANSMISSION_TYPE:          BodyTypeGroup;
-    VEHICLE_CONDITION:          BodyTypeGroup;
-    VEHICLE_OPTION:             BodyTypeGroup;
-    NCAP_OVERALL_SAFETY_RATING: BodyTypeGroup;
+    NUMBER_OF_DOORS:            BODYTYPEGROUPClass;
+    TRANSMISSION_TYPE:          BODYTYPEGROUPClass;
+    VEHICLE_CONDITION:          BODYTYPEGROUPClass;
+    VEHICLE_OPTION:             BODYTYPEGROUPClass;
+    NCAP_OVERALL_SAFETY_RATING: BODYTYPEGROUPClass;
     YEAR:                       Year;
-    IS_EV_OR_PHEV:              BodyTypeGroup;
-    IS_DIGITAL_DEAL:            BodyTypeGroup;
-    NUMBER_OF_SEATS:            BodyTypeGroup;
+    SEARCH_DISTANCE:            SearchDistance;
+    IS_EV_OR_PHEV:              BODYTYPEGROUPClass;
+    IS_DIGITAL_DEAL:            BODYTYPEGROUPClass;
+    NUMBER_OF_SEATS:            BODYTYPEGROUPClass;
     BUY_ONLINE_TYPE:            BuyOnlineType;
-    ENGINE_HIERARCHY:           BodyTypeGroup;
-    VEHICLE_HISTORY_OPTIONS:    BodyTypeGroup;
+    ENGINE_HIERARCHY:           BODYTYPEGROUPClass;
+    VEHICLE_HISTORY_OPTIONS:    BODYTYPEGROUPClass;
     MAKE_MODEL:                 MakeModel;
 }
 
-export interface BodyTypeGroup {
+export interface BODYTYPEGROUPClass {
     filters: BODYTYPEGROUPFilter[];
     name:    string;
     label:   string;
@@ -229,6 +235,17 @@ export interface MAKEMODELFilter {
     filters?:       MAKEMODELFilter[];
 }
 
+export interface SearchDistance {
+    filters: BodyTypeGroupElement[];
+    name:    string;
+    label:   string;
+}
+
+export interface BodyTypeGroupElement {
+    value: string;
+    text:  string;
+}
+
 export interface Year {
     years:    number[];
     minValue: number;
@@ -246,11 +263,16 @@ export interface PageInfoDto {
 }
 
 export interface Search {
+    zip:                       string;
     distance:                  number;
     selectedEntity:            string;
     sourceContext:             string;
+    startYear:                 number;
+    endYear:                   number;
+    maxMileage:                number;
     daysOnMarketMin:           number;
     daysOnMarketMax:           number;
+    geoLocation:               GeoLocation;
     priceDropsOnly:            boolean;
     colors:                    any[];
     interiorColors:            any[];
@@ -262,6 +284,7 @@ export interface Search {
     sortDir:                   string;
     sortType:                  string;
     shopByTypes:               string[];
+    locationDisplayName:       string;
     makeModelTrimPaths:        SelectedMakeID[];
     srpVariation:              string;
     config:                    { [key: string]: boolean };
@@ -284,24 +307,29 @@ export interface FilterTagInfo {
     filterTags: any[];
 }
 
+export interface GeoLocation {
+    latitude:  number;
+    longitude: number;
+}
+
 export interface SearchForm {
     selectedMakeId:           SelectedMakeID;
     selectedEntities:         SelectedMakeID[];
     yearsRange:               number[];
-    usedCarSearchDistances:   SearchDistance[];
-    bodyStyleSearchDistances: SearchDistance[];
-    priceSearchDistances:     SearchDistance[];
+    usedCarSearchDistances:   BodyStyleSearchDistanceElement[];
+    bodyStyleSearchDistances: BodyStyleSearchDistanceElement[];
+    priceSearchDistances:     BodyStyleSearchDistanceElement[];
     bodyTypeGroups:           BodyTypeGroupElement[];
 }
 
-export interface SearchDistance {
+export interface BodyStyleSearchDistanceElement {
     value: number;
     text:  string;
 }
 
-export interface BodyTypeGroupElement {
-    value: string;
-    text:  string;
+export enum Region {
+    FL = "FL",
+    Sc = "SC",
 }
 
 export interface SEOExperimentV2Dto {
@@ -328,7 +356,7 @@ export interface Tile {
 
 export interface Data {
     id?:                           number;
-    inclusionType?:                AppAaTest;
+    inclusionType?:                AdsLoadLibraryPostOnetrustLoad;
     listingSource?:                ListingSource;
     listingTitle?:                 string;
     makeName?:                     MakeName;
@@ -339,8 +367,8 @@ export interface Data {
     carYear?:                      number;
     trimName?:                     string;
     localizedTransmission?:        LocalizedTransmission;
-    bodyTypeGroupId?:              string;
-    bodyTypeName?:                 string;
+    bodyTypeGroupId?:              BodyTypeGroupID;
+    bodyTypeName?:                 BodyTypeName;
     salesStatus?:                  SalesStatus;
     sortScore?:                    number;
     options?:                      string[];
@@ -365,7 +393,9 @@ export interface Data {
     sellerType?:                   SellerType;
     dealerName?:                   ErName;
     sellerCity?:                   SellerCity;
+    sellerRegion?:                 Region;
     sellerPostalCode?:             string;
+    distance?:                     number;
     googleStaticMapUrl?:           string;
     serviceProviderId?:            number;
     debugInfo?:                    string;
@@ -394,11 +424,23 @@ export interface Data {
     vin?:                          string;
     stockNumber?:                  string;
     interiorColor?:                string;
-    dealerLogoUrl?:                string;
     eligibleProducts?:             string[];
     metadata?:                     Metadata;
     isCPO?:                        boolean;
     cpoTier?:                      number;
+    dealerLogoUrl?:                string;
+}
+
+export enum BodyTypeGroupID {
+    Bg3 = "bg3",
+    Bg6 = "bg6",
+    Bg7 = "bg7",
+}
+
+export enum BodyTypeName {
+    Hatchback = "Hatchback",
+    SUVCrossover = "SUV/Crossover",
+    Sedán = "Sedán",
 }
 
 export interface CityFuelEconomy {
@@ -414,7 +456,6 @@ export enum Unit {
 export enum DealRating {
     FairPrice = "FAIR_PRICE",
     GoodPrice = "GOOD_PRICE",
-    Overpriced = "OVERPRICED",
     PoorPrice = "POOR_PRICE",
 }
 
@@ -455,7 +496,6 @@ export enum LocalizedFuelType {
 
 export enum LocalizedTransmission {
     Automática = "Automática",
-    Manual = "Manual",
 }
 
 export interface Metadata {
