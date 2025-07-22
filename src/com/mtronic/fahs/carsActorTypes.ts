@@ -1,4 +1,5 @@
 interface CarsActorInput {
+    provider: string;
     brands: string[];
     dealers: string[];
     distance: number;
@@ -8,7 +9,8 @@ interface CarsActorInput {
     zip?: number;
     startYear?: number;
     endYear?: number;
-    colors?: string[]
+    colors?: string[],
+    maxShipPrice?: number
 }
 
 interface CarActorResponse {
@@ -22,6 +24,8 @@ interface CarActorResponse {
     daysOnMarket: number;
     mileage: number;
     distance: number;
+    provider: string;
+    storeId: string;
 }
 
 export {

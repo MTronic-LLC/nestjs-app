@@ -82,6 +82,7 @@ export class FahsController {
 
     @Get('getCars')
     async getCars(
+        @Query('provider') provider: string,
         @Query('dealers') dealers: string | string[],
         @Query('brands') brands: string | string[],
         @Query('minDaysOnMarket') minDaysOnMarket: string,
@@ -91,14 +92,13 @@ export class FahsController {
         @Query('zip') zip?: string,
         @Query('startYear') startYear?: string,
         @Query('endYear') endYear?: string,
-        @Query('colors') colors?: string | string[]
+        @Query('colors') colors?: string | string[],
+        @Query('maxShipPrice') maxShipPrice?: string
+
     ): Promise<any> {
         if (
             !dealers ||
-            !brands ||
-            !minDaysOnMarket ||
-            !maxDaysOnMarket ||
-            !distance
+            !brands 
         ) {
             throw new HttpException(
                 'All parameters (dealers, brands, minDaysOnMarket, maxDaysOnMarket, distance) are required',
@@ -107,11 +107,12 @@ export class FahsController {
         }
         try {
             const input: CarsActorInput = {
+                provider,
                 dealers: Array.isArray(dealers) ? dealers : [dealers],
                 brands: Array.isArray(brands) ? brands : [brands],
-                minDaysOnMarket: Number(minDaysOnMarket),
-                maxDaysOnMarket: Number(maxDaysOnMarket),
-                distance: Number(distance)
+                minDaysOnMarket: Number(minDaysOnMarket || -1),
+                maxDaysOnMarket: Number(maxDaysOnMarket || -1),
+                distance: Number(distance || -1),
             };
 
             if (mileage) {
@@ -132,6 +133,10 @@ export class FahsController {
 
             if (colors) {
                 input.colors = Array.isArray(colors) ? colors : [colors];
+            }
+
+            if (maxShipPrice) {
+                input.maxShipPrice = Number(maxShipPrice);
             }
 
             return await this.carsActorService.getActorResults(input);

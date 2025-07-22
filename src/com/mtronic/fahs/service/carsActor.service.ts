@@ -3,7 +3,9 @@ import {ConfigService} from "@nestjs/config";
 import {ApifyClient} from "apify-client";
 import { CarsActorInput } from "../carsActorTypes";
 import { CarsActorQueryMapper } from "../mapper/cars-actor-query.mapper";
+import { CarMaxActorQueryMapper } from "../mapper/carmax-actor-query.mapper";
 import { CarsActorQueryDto } from "../dto/carsActor/cars-actor-query.dto";
+import { CarMaxActorQueryDto } from "../dto/carsActor/carmax-actor-query.dto";
 import { CodaService } from "src/coda/coda.service";
 
 @Injectable()
@@ -11,6 +13,7 @@ export class CarsActorService {
     constructor (
         private configService: ConfigService,
         private carsActorQueryMapper: CarsActorQueryMapper,
+        private carMaxActorQueryMapper: CarMaxActorQueryMapper,
         private codaService: CodaService
     ) {}
     public async getActorResults(
@@ -22,8 +25,16 @@ export class CarsActorService {
         });
         const runActor = await apifyClient.actor('cJduc2OPxGclrCgYH').call(input);
         const {items: CarsActorQueryDto} = await apifyClient.dataset(runActor.defaultDatasetId).listItems();
-        console.log('Actor results:', CarsActorQueryDto);
-        const results = this.carsActorQueryMapper.mapCarQueryResponseToCarCodaRow(CarsActorQueryDto as unknown as CarsActorQueryDto[]);
+
+        let results = [];
+        if (input.provider === "carmax")
+        {
+            results = this.carMaxActorQueryMapper.mapCarmaxQueryResponseToCarCodaRow(CarsActorQueryDto as unknown as CarMaxActorQueryDto[])
+        } else if (input.provider === "cargurus")
+        {
+            results = this.carsActorQueryMapper.mapCarQueryResponseToCarCodaRow(CarsActorQueryDto as unknown as CarsActorQueryDto[])
+        }
+
         const codaTableRow = await this.codaService.getTableRows(
             'RyXHMyO6K8',
             'grid-l-ZJ2OheaK'
@@ -46,7 +57,9 @@ export class CarsActorService {
                     { column: "c-m3gt0cybrQ", value: String(car.year) },
                     { column: "c-asiSocGYjd", value: car.title },
                     { column: "c-nkjIHRCuzB", value: String(car.mileage) },
-                    { column: "c-fDOEyFOrvo", value: String(car.distance) }
+                    { column: "c-fDOEyFOrvo", value: String(car.distance) },
+                    { column: "c-XS2_DmZ1DC", value:  car.storeId},
+                    { column: "c-0i4pmmGyQ6", value: car.provider }
                 ]
             }));
         

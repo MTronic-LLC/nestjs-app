@@ -10,11 +10,12 @@ import { FahsService } from "../service/fahs.service";
 import { carsActorModule } from "../service/carsActor.module";
 import { CarsActorService } from "../service/carsActor.service";
 import { CarsActorQueryMapper } from "../mapper/cars-actor-query.mapper";
+import { CarMaxActorQueryMapper } from "../mapper/carmax-actor-query.mapper";
 //import {AirbnbStaySearchMapper} from "../mapper/airbnb-stay-search.mapper";
 
 @Module({
     imports: [MongoModule, CodaModule, ActorModule, carsActorModule],
-    providers: [CodaService, ActorService, CarsActorService, AirbnbCalendarMapper, FahsService, CarsActorQueryMapper /*AirbnbStaySearchMapper*/],
+    providers: [CodaService, ActorService, CarsActorService, AirbnbCalendarMapper, FahsService, CarsActorQueryMapper, CarMaxActorQueryMapper /*AirbnbStaySearchMapper*/],
     controllers: [FahsController]
 })
 export class FahsModule {}

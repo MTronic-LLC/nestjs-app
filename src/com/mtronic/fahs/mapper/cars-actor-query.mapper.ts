@@ -26,6 +26,7 @@ export class CarsActorQueryMapper {
                     return;
                 }
                 results.push({
+                    provider: 'cargurus',
                     id: car.data.id,
                     title: car.data.listingTitle,
                     year: car.data.carYear,
@@ -35,7 +36,8 @@ export class CarsActorQueryMapper {
                     mapUrl: car.data.googleStaticMapUrl,
                     daysOnMarket: car.data.daysOnMarket,
                     distance: car.data.distance ? car.data.distance : -1,
-                    mileage: car.data.mileage
+                    mileage: car.data.mileage,
+                    storeId: ''
                 });
             });
         });
